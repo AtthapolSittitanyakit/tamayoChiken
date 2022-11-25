@@ -1,89 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'ExchangeRate.dart';
-import 'MoneyBox.dart';
+import 'package:helloworld/pages/home.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "My App",
-      home: MyHomePage(),
-      theme: ThemeData(primarySwatch: Colors.purple),
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+        // scaffoldBackgroundColor: Colors.blueGrey[900]),
+        scaffoldBackgroundColor: const Color.fromRGBO(17, 19, 21, 1),
+      ),
+      home: MyHomePage(title: 'Flutter POS'),
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  ExchangeRate _dataFromAPI;
-  @override
-  void initState() {
-    super.initState();
-    getExchangeRate();
-  }
-
-  Future<ExchangeRate> getExchangeRate() async {
-    var url = "https://api.exchangeratesapi.io/latest?base=THB";
-    var response = await http.get(url);
-    _dataFromAPI = exchangeRateFromJson(response.body); //json => dart object
-    return _dataFromAPI;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("แปลงสกุลเงิน",
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        ),
-        body: FutureBuilder(
-          future: getExchangeRate(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            //ดึงข้อมูลจาก getExchangeRate มาครบเรียบร้อยจะให้ทำอะไร
-            if (snapshot.connectionState == ConnectionState.done) {
-              var result = snapshot.data;
-              double amount = 10000;
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    MoneyBox("สกุลเงิน (THB)", amount, Colors.lightBlue, 150),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    MoneyBox(
-                        "USD", amount * result.rates["USD"], Colors.green, 100),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    MoneyBox(
-                        "EUR", amount * result.rates["EUR"], Colors.red, 100),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    MoneyBox(
-                        "GBP", amount * result.rates["GBP"], Colors.pink, 100),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    MoneyBox("JPY", amount * result.rates["JPY"], Colors.orange,
-                        100),
-                  ],
-                ),
-              );
-            }
-            return LinearProgressIndicator();
-          },
-        ));
   }
 }
